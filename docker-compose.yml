@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fleetcore-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      # Exposed so the host can run migration:* scripts and DB clients.
+      - '${DB_HOST_PORT:-5432}:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - fleetcore-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -d ${DB_NAME}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      target: production
+    container_name: fleetcore-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Inside the Compose network the database is reached by service name.
+      DB_HOST: postgres
+      DB_PORT: 5432
+      PORT: 3000
+    ports:
+      - '${API_HOST_PORT:-3000}:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fleetcore-network
+
+volumes:
+  postgres-data:
+
+networks:
+  fleetcore-network:
+    driver: bridge
