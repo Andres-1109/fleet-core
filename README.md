@@ -12,7 +12,7 @@ external integrations, optional Google sign-in, and interactive Swagger docs.
 |---|---|
 | **Name** | Andres Felipe Giraldo Acosta |
 | **Clan** | Node Js Am |
-| **GitHub** | [Andres-1109](https://github.com/Andres-1109) |
+| **GitHub** | [Andres-1109](https://github.com/Andres-1109/fleet-core) |
 
 ## Tech stack
 
